@@ -1,5 +1,10 @@
+# Ignore everything
 *
 
+# Not to ignore directories
+!*/
+
+# Not to ignore files with the following extensions
 !*.c
 !*.h
 !Makefile
@@ -9,3 +14,4 @@
 !*.inp
 !*.txt
 !.gitignore
+!*.md
