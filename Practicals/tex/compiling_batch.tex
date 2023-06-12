@@ -103,9 +103,17 @@ In these exercises we will look at compiling C programs, and introduce use of th
 The practicals will be performed on the cluster. Log on using the username and password that have been provided, and the files are under the directory {\cc notes}
 
 Remember, to log in use: \\
-{\cc ssh -CX [username]@oscgate.arc.ox.ac.uk}
+{\cc ssh -CX [username]@htc-login.arc.ox.ac.uk}
 
-{\cc ssh -CX arcus-htc}
+Load git module: \\
+{\cc module load git}
+
+Clone CWM repository if you not already done so: \\
+{\cc  git clone https://github.com/wesarmour/CWM-in-HPC-and-Scientific-Computing-2023.git}
+
+Check for updates before each practical: \\
+{\cc git pull}
+
 
 %                                                                       %
 % ===================================================================== %
@@ -129,7 +137,7 @@ one of the simplest programs possible, the ``hello world'' code.  The source
 files are found in the directory {\cc hello}:
 %
 \begin{itemize}
-  \item {\cc hello.c} -- ``hello world'' program 
+  \item {\cc hello\_world.c} -- ``hello world'' program 
 \end{itemize}
 %
 
@@ -150,13 +158,13 @@ files are found in the directory {\cc hello}:
     makefiles will need changing as the gnu compiler accepts different flags, and uses
     the command gcc to invoke the compiler.
 
-  \item Edit the ``hello world'' program {\cc hello.c} and try to understand it
+  \item Edit the ``hello world'' program {\cc hello\_world.c} and try to understand it
 
-  \item Compile the program with {\cc icc hello.c}
+  \item Compile the program with {\cc icc hello\_world.c}
 
-  \item Use ls to see executable which the compilation has made, {\cc a.out} in this case
+  \item Use \texttt{ls} to see executable which the compilation has made, {\cc a.out} in this case
 
-  \item Run the executable. does it give the output you expect?
+  \item Run the executable. Does it give the output you expect?
 
   \item Re-compile, this time with an appropriate flag so the executable is called {\cc hello}
     Check you have done this successfully via ls, and running the new executable
@@ -272,7 +280,7 @@ batch script for the arcus-htc system and we will now use it to run the {\cc gs}
      similar to {\cc slurm-1702775.out}, where the number will be the same as that printed out by sbatch. Examine the contents of this file.
 
   \item Re-run the timing exercise from the previous question where you examined how fast the program ran
-     as a function of optimisation level, and see if the ime in batch differes much from that measured on the front end
+     as a function of optimisation level, and see if the time in batch differs much from that measured on the front end
 
   \item Rather than {\cc slurm-1702775.out} how can you get the output written to a filename of your choice? \\
   Slurm's {\cc sbatch} docs might be useful {\cc https://slurm.schedmd.com/sbatch.html}
