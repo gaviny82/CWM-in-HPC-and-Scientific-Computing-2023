@@ -1,0 +1,11 @@
+*
+
+!*.c
+!*.h
+!Makefile
+!makefile
+!*.sh
+!*.sl
+!*.inp
+!*.txt
+!.gitignore
