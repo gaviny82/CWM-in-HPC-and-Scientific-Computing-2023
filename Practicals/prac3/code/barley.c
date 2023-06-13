@@ -16,6 +16,7 @@ int main(void)
 {
     // In here I need to delare my variables
     float loss_in_kg = 0.0f;
+    float loss_in_pence = 0.0f;
     float total_area = 0.0f;
 
     // Next I need to get input from the user.
@@ -70,10 +71,24 @@ int main(void)
 
     // Using the above I'll work out how much barley has been lost.
     loss_in_kg = total_area * 0.135;
+    loss_in_pence = loss_in_kg * 10;
 
     // Finally I'll use a printf() to print this to the screen.
     printf("Total area lossed in m^2 is:\t%f\n", total_area);
     printf("Total loss in kg is:\t\t%f\n", loss_in_kg);
+    printf("Total loss in pence is:\t\t%f\n", loss_in_pence);
+
+    // Ask the user to input the dimension of the farm
+    float length, width;
+    printf("\n");
+    printf("Enter the dimensions of your farm:\n");
+    printf("Length: ");
+    scanf("%f", &length);
+    printf("Width: ");
+    scanf("%f", &width);
+    float area_of_farm = area_of_rect(length, width);
+    float percentage_loss = total_area / area_of_farm;
+    printf("Percentage lost: %.2f%%\n", percentage_loss);
 
     return 0;
 }
