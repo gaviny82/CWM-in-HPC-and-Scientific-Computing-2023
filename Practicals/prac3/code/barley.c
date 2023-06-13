@@ -22,7 +22,7 @@ int main(void)
     // Next I need to get input from the user.
     // I'll do this by using a printf() to ask the user to input the radii.
     printf("Input the shapes and their dimensions in dimensions.txt\n");
-    printf("Press [Enter] to continue when radii.txt is saved.\n");
+    printf("Press [Enter] to continue when dimensions.txt is saved.\n");
     getchar();
 
     // Open file dimensions.txt
