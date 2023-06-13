@@ -9,6 +9,7 @@
 // Include any headers from the C standard library here
 #include <stdio.h>
 #include "shapes.h"
+#include "parse.h"
 
 // Now I start my code with main()
 int main(void)
@@ -19,25 +20,41 @@ int main(void)
 
     // Next I need to get input from the user.
     // I'll do this by using a printf() to ask the user to input the radii.
-    printf("Input the radii in radii.txt\n");
+    printf("Input the shapes and their dimensions in dimensions.txt\n");
     printf("Press [Enter] to continue when radii.txt is saved.\n");
     getchar();
 
-    // Open file radii.txt
-    FILE *radii_file = fopen("radii.txt", "r");
-    if (radii_file == NULL)
+    // Open file dimensions.txt
+    FILE *dim_file = fopen("dimensions.txt", "r");
+    if (dim_file == NULL)
     {
-        printf("Unable to open radii.txt\n");
+        printf("Unable to open the dimensions file.\n");
         return 1;
     }
 
-    // Now I need to loop through the radii caluclating the area for each
-    float radius;
-    while (fscanf(radii_file, "%f\n", &radius) == 1)
+    // Now I need to loop through the lines caluclating the area for each shape
+    char buffer[50];
+    while (!feof(dim_file))
     {
+        // Read a line
+        char *line = fgets(buffer, 50, dim_file);
+        if (line == NULL)
+        {
+            printf("Error in reading the dimensions.\n");
+            return 2;
+        }
+
+        // Parse a line and calculate the area
+        float area = parse_and_get_area(line);
+        if (area == -1.0f)
+        {
+            printf("Unsupported shape %c\n", line[0]);
+            return 3;
+        }
+        printf("Area %c: %f\n", line[0], area);
+
         // Next I'll sum up all of the individual areas
-        printf("%f\n", radius);
-        total_area += area_of_circle(radius);
+        total_area += area;
     }
 
 
