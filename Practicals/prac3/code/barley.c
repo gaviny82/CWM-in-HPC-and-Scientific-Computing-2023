@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 // Define any constants that I need to use here
+#define PI 3.1415926
 
 // This is where I should put my function prototypes
 float area_of_circle(float radius); 
@@ -18,13 +19,32 @@ float area_of_circle(float radius);
 int main() {
 
     // In here I need to delare my variables
+    float loss_in_kg = 0.0f;
+    float total_area = 0.0f;
 
     // Next I need to get input from the user.
     // I'll do this by using a printf() to ask the user to input the radii.
+    printf("Input the radii in radii.txt\n");
+    printf("Press [Enter] to continue when radii.txt is saved.\n");
+    getchar();
+
+    // Open file radii.txt
+    FILE *radii_file = fopen("radii.txt", "r");
+    if (radii_file == NULL)
+    {
+        printf("Unable to open radii.txt\n");
+        return 1;
+    }
 
     // Now I need to loop through the radii caluclating the area for each
+    float radius;
+    while (fscanf(radii_file, "%f\n", &radius) == 1)
+    {
+        // Next I'll sum up all of the individual areas
+        printf("%f\n", radius);
+        total_area += area_of_circle(radius);
+    }
 
-    // Next I'll sum up all of the individual areas
 
     /******************************************************************
      *                                                                *
@@ -37,10 +57,10 @@ int main() {
      ******************************************************************/
 
     // Using the above I'll work out how much barley has been lost.
-    loss_in_kg = total_area*0.135;
+    loss_in_kg = total_area * 0.135;
 
     // Finally I'll use a printf() to print this to the screen.
-    printf("\nTotal area lossed in m^2 is:\t%f\n", total_area);
+    printf("Total area lossed in m^2 is:\t%f\n", total_area);
     printf("Total loss in kg is:\t\t%f\n", loss_in_kg);
 
     return(0);
@@ -48,3 +68,8 @@ int main() {
 
 // I'll put my functions here:
 
+float area_of_circle(float radius)
+{
+    float area = PI * radius * radius;
+    return area;
+}
