@@ -8,16 +8,11 @@
 
 // Include any headers from the C standard library here
 #include <stdio.h>
-
-// Define any constants that I need to use here
-#define PI 3.1415926
-
-// This is where I should put my function prototypes
-float area_of_circle(float radius); 
+#include "shapes.h"
 
 // Now I start my code with main()
-int main() {
-
+int main(void)
+{
     // In here I need to delare my variables
     float loss_in_kg = 0.0f;
     float total_area = 0.0f;
@@ -63,13 +58,5 @@ int main() {
     printf("Total area lossed in m^2 is:\t%f\n", total_area);
     printf("Total loss in kg is:\t\t%f\n", loss_in_kg);
 
-    return(0);
-}
-
-// I'll put my functions here:
-
-float area_of_circle(float radius)
-{
-    float area = PI * radius * radius;
-    return area;
+    return 0;
 }
