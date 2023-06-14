@@ -1,7 +1,7 @@
 #!/bin/bash
 # set the number of nodes and processes per node
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=16
+#SBATCH --ntasks-per-node=1
 #SBATCH --partition=short
 
 # set max wallclock time
@@ -20,4 +20,11 @@ module load GCC/10.3.0
 
 export OMP_NUM_THREADS=16
 
-./integral_omp < integral.inp
+echo "N = 10000"
+./integral_omp < integral10000.inp
+
+echo "N = 100000"
+./integral_omp < integral100000.inp
+
+echo "N = 1000000"
+./integral_omp < integral1000000.inp
