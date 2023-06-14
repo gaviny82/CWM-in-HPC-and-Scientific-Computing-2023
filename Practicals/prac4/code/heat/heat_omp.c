@@ -80,15 +80,19 @@ int main( void ) {
 
   /* Initial values to be solved on the grid */
   /* ... */
-  for( j = 1; j < n - 1; j++ ){
-    u[ j ] = sin( j * PI / L );
+  #pragma omp parallel default(none) private(j) shared(n, L)
+#pragma omp for
+  for (j = 1; j < n - 1; j++)
+  {
+    u[j] = sin(j * PI / L);
   }
 
   /* All set up so now solve the equations at each time step*/
 
   /* Start of the parallel region - make sure that you enclose all the parallel
      stuff in braces !! */
-#pragma omp parallel default( none ) private( t, j, du_loc ) shared( n, n_time_steps, nu, u, uo, du )
+  int time_start = omp_get_wtime();
+#pragma omp parallel default( none ) private( t, j, du_loc ) shared( n, n_time_steps, nu, u, uo, du, rms, L )
   {
 
     /* Time loop */
@@ -137,20 +141,23 @@ int main( void ) {
 #ifdef _OPENMP
       }
 #endif
-	
     }
-
   }
+  int time_end = omp_get_wtime();
 
   /* Check the solution against the exact, analytic answer */
   rms = 0.0;
-  /* ... */
-    for (j=1; j<n-1; j++) {
-      du = u[ j ] - sin( j * PI / L ) *  exp( - n_time_steps * nu * PI * PI / ( L * L ) );
-      rms += du*du;
-    }
+/* ... */
+#pragma omp for reduction(+ : rms)
+  for (j = 1; j < n - 1; j++)
+  {
+    du = u[j] - sin(j * PI / L) * exp(-n_time_steps * nu * PI * PI / (L * L));
+    rms += du * du;
+  }
   printf( "The RMS error in the final solution is %-#14.8g\n", sqrt(rms/((double) n)) );
 
+  printf(" process time      = %e s\n", time_end - time_start);
+  
   return EXIT_SUCCESS;
 
 }

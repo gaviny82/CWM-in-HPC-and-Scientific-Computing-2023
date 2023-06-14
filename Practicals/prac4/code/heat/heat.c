@@ -6,6 +6,20 @@
 #define MAX( A, B ) ( (A) > (B) ? (A) : (B) )
 #define PI 3.14159265358979323846264338327950288419716939937510582
 
+double wall_clock_time(void)
+{
+
+#include <sys/time.h>
+#define MILLION 1000000.0
+
+  double secs;
+  struct timeval tp;
+
+  gettimeofday(&tp, NULL);
+  secs = (MILLION * (double)tp.tv_sec + (double)tp.tv_usec) / MILLION;
+  return secs;
+}
+
 int main( void ) {
 
   /* Example program to solve the heat equation in 1D in serial */
@@ -80,6 +94,8 @@ int main( void ) {
 
   /* All set up so now solve the equations at each time step*/
 
+  double time_start = wall_clock_time();
+
   /* Time loop */
   for (t=0; t<n_time_steps; t++) {
 
@@ -101,11 +117,11 @@ int main( void ) {
 
     /* Occasionally report the maximum change as the temperature distribution 
        relaxes */
-    if( t%10 == 0 || t == n_time_steps - 1 )
-      printf( "At timestep %5i the maxmimum change in the solution is %-#14.8g\n",
-	      t, du );
-
+    // if( t%10 == 0 || t == n_time_steps - 1 )
+    //   printf( "At timestep %5i the maxmimum change in the solution is %-#14.8g\n",
+	  //     t, du );
   }
+  double time_end = wall_clock_time();
 
   /* Check the solution against the exact, analytic answer, */
   /* by computing the root mean square error. */
@@ -114,7 +130,8 @@ int main( void ) {
     du = u[ j ] - sin( j * PI / L ) *  exp( - n_time_steps * nu * PI * PI / ( L * L ) );
     rms += du*du;
   }
-  printf( "The RMS error in the final solution is %-#14.8g\n", sqrt(rms/((double) n)) );
+  printf("The RMS error in the final solution is %-#14.8g\n", sqrt(rms / ((double)n)));
+  printf(" process time      = %e s\n", time_end - time_start);
 
   return EXIT_SUCCESS;
 
