@@ -265,6 +265,8 @@ int main(int argc, char **argv)
         fprintf(stderr, "!!!! memory free error (C)\n");
         return EXIT_FAILURE;
     }
+    
+    printf("RMS Error = %f\n", error_norm);
 
     /* Shutdown */
     status = cublasDestroy(handle);
