@@ -64,6 +64,19 @@ void Do_FFT_C2C_forward(cufftComplex *d_fft_output, cufftComplex *d_input_data, 
 // it in-place.
 void Do_FFT_C2C_inverse_inplace(cufftComplex *d_fft_in_out, int size_of_one_fft, int number_of_ffts){
     //write your function here
+	
+	// Create cuFFT plan
+	cufftHandle plan;
+	if (cufftPlan1d(&plan, size_of_one_fft, CUFFT_C2C, number_of_ffts) != CUFFT_SUCCESS){
+		printf("CUFFT error: Plan creation failed");
+		return;	
+	}
+
+	// Perform inverse FFT
+	cufftExecC2C(plan, d_fft_in_out, d_fft_in_out, CUFFT_INVERSE);
+	
+	// This deallocate resources taken by the cuFFT plan
+	cufftDestroy(plan);
 
 }
 
@@ -87,7 +100,7 @@ int main(void) {
 	
 	for(int f=0; f<size_of_one_fft; f++){
 		h_input_data[f].x = sin(4.0*31.25*((float) f));
-		h_input_data[f].y = 0;
+		h_input_data[f].y = 0;// Imaginary part = 0
 	}
 	
 	
