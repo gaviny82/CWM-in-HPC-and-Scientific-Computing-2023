@@ -80,7 +80,7 @@ int main( void ) {
 
   /* Initial values to be solved on the grid */
   /* ... */
-  #pragma omp parallel default(none) private(j) shared(n, L)
+  #pragma omp parallel default(none) private(j) shared(n, L, u)
 #pragma omp for
   for (j = 1; j < n - 1; j++)
   {
@@ -91,7 +91,7 @@ int main( void ) {
 
   /* Start of the parallel region - make sure that you enclose all the parallel
      stuff in braces !! */
-  int time_start = omp_get_wtime();
+  double time_start = omp_get_wtime();
 #pragma omp parallel default( none ) private( t, j, du_loc ) shared( n, n_time_steps, nu, u, uo, du, rms, L )
   {
 
@@ -143,11 +143,12 @@ int main( void ) {
 #endif
     }
   }
-  int time_end = omp_get_wtime();
+  double time_end = omp_get_wtime();
 
   /* Check the solution against the exact, analytic answer */
   rms = 0.0;
-/* ... */
+  /* ... */
+#pragma omp parallel default(none) private(j) shared(n, L, u, rms, n_time_steps, nu, du)
 #pragma omp for reduction(+ : rms)
   for (j = 1; j < n - 1; j++)
   {
