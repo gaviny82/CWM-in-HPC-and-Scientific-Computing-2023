@@ -38,7 +38,11 @@
 // write your kernel here
 
 //----------------------------------------------------------------------
-
+__global__ void helloworld_blocks(void)
+{
+  int block = blockIdx.x;
+  printf("Hello world from block %d!\n", block);
+}
 
 //----------------------------------------------------------------------
 // TASK 2.0: Write a "Hello world" kernel which output "Hello world" but 
@@ -51,7 +55,12 @@
 // write your kernel here
 
 //----------------------------------------------------------------------
-
+__global__ void helloworld_blocks_threads(void)
+{
+  int block = blockIdx.x;
+  int thread = threadIdx.x;
+  printf("Hello world from block %d, thread %d!\n", block, thread);
+}
 
 //----------------------------------------------------------------------
 // TASK 3.0: Write a "Hello world" kernel where only first thread from each
@@ -72,6 +81,16 @@
 // write your kernel here
 
 //----------------------------------------------------------------------
+__global__ void helloworld_branch(void)
+{
+  int block = blockIdx.x;
+  int thread = threadIdx.x;
+  if (thread % 32 == 0)
+  {
+    int warp = thread / 32;
+    printf("Hello world from block %d, warp %d!\n", block, warp);
+  }
+}
 
 
 int main(void) {
@@ -100,25 +119,26 @@ int main(void) {
   // put your code here
   
   //----------------------------------------------------------------------
+  helloworld_blocks<<<10, 1>>>();
 
   //----------------------------------------------------------------------
-  // TASK 2.1: execute your "Hello world" kernel from TASK 2.0 on about  
+  // TASK 2.1: execute your "Hello world" kernel from TASK 2.0 on about
   // 5 blocks each containing about 10 threads. When you configured the kernel
   // compile the code typing "make" and then run it be executing
   // ./helloworld_scheduling.exe
   // You should see that blocks are still scheduled in haphazard manner,
-  // but threads within them, being from one warp should execute in order. 
-  // 
-  // You may use whatever syntax version you prefer, a simplified one 
+  // but threads within them, being from one warp should execute in order.
+  //
+  // You may use whatever syntax version you prefer, a simplified one
   // dimensional or full three dimensional call using dim3 data type.
-  
+
   // put your code here
-  
+
   //----------------------------------------------------------------------
-  
-  
+  helloworld_blocks_threads<<<5, 10>>>();
+
   //----------------------------------------------------------------------
-  // TASK 3.1: execute your "Hello world" kernel from TASK 3.0 on about  
+  // TASK 3.1: execute your "Hello world" kernel from TASK 3.0 on about
   // 5 blocks each containing about 320 threads. When you configured the kernel
   // compile the code typing "make" and then run it be executing
   // ./helloworld_scheduling.exe
@@ -126,14 +146,129 @@ int main(void) {
   // in haphazard manner.
   // To see more clearly that warps are executed in haphazard manner run
   // your kernel with only one block.
-  // 
-  // You may use whatever syntax version you prefer, a simplified one 
+  //
+  // You may use whatever syntax version you prefer, a simplified one
   // dimensional or full three dimensional call using dim3 data type.
-  
+
   // put your code here
-  
+
   //----------------------------------------------------------------------
-  
+  helloworld_branch<<<5, 320>>>();
+
+  /* Output:
+    Hello world from block 4!
+    Hello world from block 0!
+    Hello world from block 3!
+    Hello world from block 6!
+    Hello world from block 9!
+    Hello world from block 2!
+    Hello world from block 8!
+    Hello world from block 5!
+    Hello world from block 1!
+    Hello world from block 7!
+    Hello world from block 4, thread 0!
+    Hello world from block 4, thread 1!
+    Hello world from block 4, thread 2!
+    Hello world from block 4, thread 3!
+    Hello world from block 4, thread 4!
+    Hello world from block 4, thread 5!
+    Hello world from block 4, thread 6!
+    Hello world from block 4, thread 7!
+    Hello world from block 4, thread 8!
+    Hello world from block 4, thread 9!
+    Hello world from block 0, thread 0!
+    Hello world from block 0, thread 1!
+    Hello world from block 0, thread 2!
+    Hello world from block 0, thread 3!
+    Hello world from block 0, thread 4!
+    Hello world from block 0, thread 5!
+    Hello world from block 0, thread 6!
+    Hello world from block 0, thread 7!
+    Hello world from block 0, thread 8!
+    Hello world from block 0, thread 9!
+    Hello world from block 2, thread 0!
+    Hello world from block 2, thread 1!
+    Hello world from block 2, thread 2!
+    Hello world from block 2, thread 3!
+    Hello world from block 2, thread 4!
+    Hello world from block 2, thread 5!
+    Hello world from block 2, thread 6!
+    Hello world from block 2, thread 7!
+    Hello world from block 2, thread 8!
+    Hello world from block 2, thread 9!
+    Hello world from block 3, thread 0!
+    Hello world from block 3, thread 1!
+    Hello world from block 3, thread 2!
+    Hello world from block 3, thread 3!
+    Hello world from block 3, thread 4!
+    Hello world from block 3, thread 5!
+    Hello world from block 3, thread 6!
+    Hello world from block 3, thread 7!
+    Hello world from block 3, thread 8!
+    Hello world from block 3, thread 9!
+    Hello world from block 1, thread 0!
+    Hello world from block 1, thread 1!
+    Hello world from block 1, thread 2!
+    Hello world from block 1, thread 3!
+    Hello world from block 1, thread 4!
+    Hello world from block 1, thread 5!
+    Hello world from block 1, thread 6!
+    Hello world from block 1, thread 7!
+    Hello world from block 1, thread 8!
+    Hello world from block 1, thread 9!
+    Hello world from block 4, warp 2!
+    Hello world from block 4, warp 7!
+    Hello world from block 4, warp 6!
+    Hello world from block 4, warp 3!
+    Hello world from block 4, warp 8!
+    Hello world from block 4, warp 4!
+    Hello world from block 4, warp 5!
+    Hello world from block 4, warp 0!
+    Hello world from block 4, warp 1!
+    Hello world from block 4, warp 9!
+    Hello world from block 3, warp 3!
+    Hello world from block 3, warp 6!
+    Hello world from block 3, warp 7!
+    Hello world from block 3, warp 2!
+    Hello world from block 2, warp 7!
+    Hello world from block 0, warp 6!
+    Hello world from block 2, warp 6!
+    Hello world from block 0, warp 3!
+    Hello world from block 0, warp 2!
+    Hello world from block 0, warp 7!
+    Hello world from block 2, warp 3!
+    Hello world from block 2, warp 2!
+    Hello world from block 3, warp 8!
+    Hello world from block 3, warp 5!
+    Hello world from block 3, warp 4!
+    Hello world from block 3, warp 9!
+    Hello world from block 3, warp 0!
+    Hello world from block 3, warp 1!
+    Hello world from block 2, warp 8!
+    Hello world from block 0, warp 9!
+    Hello world from block 0, warp 8!
+    Hello world from block 0, warp 5!
+    Hello world from block 0, warp 0!
+    Hello world from block 0, warp 1!
+    Hello world from block 2, warp 4!
+    Hello world from block 0, warp 4!
+    Hello world from block 2, warp 0!
+    Hello world from block 2, warp 5!
+    Hello world from block 2, warp 1!
+    Hello world from block 2, warp 9!
+    Hello world from block 1, warp 7!
+    Hello world from block 1, warp 6!
+    Hello world from block 1, warp 3!
+    Hello world from block 1, warp 2!
+    Hello world from block 1, warp 8!
+    Hello world from block 1, warp 9!
+    Hello world from block 1, warp 0!
+    Hello world from block 1, warp 4!
+    Hello world from block 1, warp 5!
+    Hello world from block 1, warp 1!
+
+*/
+
   cudaDeviceReset();
   return (0);
 }
