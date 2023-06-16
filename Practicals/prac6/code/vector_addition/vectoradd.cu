@@ -37,10 +37,10 @@
 
 //----------------------------------------------------------------------
 
-
-
-
-
+__global__ void vector_add(float *d_C, float *d_A, float *d_B) {
+  int index = blockIdx.x * blockDim.x + threadIdx.x;
+  d_C[index] = d_A[index] + d_B[index];
+}
 
 int main(void) {
   //----------------------------------------------------------------------
@@ -71,7 +71,18 @@ int main(void) {
   // You can initialize your data for example using a 'for' loop.
 
   size_t N = 8388608;
-  
+  float *h_A, *h_B, *h_C;
+  h_A = (float *)malloc(N * sizeof(float));
+  h_B = (float *)malloc(N * sizeof(float));
+  h_C = (float *)malloc(N * sizeof(float));
+
+  // Init A, B, C on CPU
+  for (size_t i = 0; i < N; i++){
+    h_A[i] = 1.0f;
+    h_B[i] = 2.0f;
+    h_C[i] = 0.0f;
+  }
+
   // put your code here
 
   //----------------------------------------------------------------------
@@ -91,66 +102,99 @@ int main(void) {
   // cudaError_t cudaMalloc(void** pointer, size_t size);
   
   // put your code here
-  
+
   //----------------------------------------------------------------------
-  
-  
+
+  // Initiate GPU
+  int deviceid = 0; // Using GPU with id 0
+  int devCount;
+  cudaGetDeviceCount(&devCount);
+
+  // Check if we have enough GPUs
+  if (devCount <= deviceid)
+    return 1;
+
+  // Tell CUDA that we want to use GPU 0
+  cudaSetDevice(deviceid);
+
+  // Allocate memory on GPU
+  float *d_A, *d_B, *d_C;
+  if (cudaMalloc((void **)&d_A, N * sizeof(float)) != cudaSuccess ||
+      cudaMalloc((void **)&d_B, N * sizeof(float)) != cudaSuccess ||
+      cudaMalloc((void **)&d_C, N * sizeof(float)) != cudaSuccess)
+  {
+    printf("Failed to allocate GPU memory!\n");
+    return 2;
+  }
+
+
   //----------------------------------------------------------------------
   // TASK 3: Here we would like to copy the data from the host to the device
-  
+
   // To do that we will use function 'cudaMemcpy'
   // cudaError_t cudaMemcpy(destination, source, size, direction);
   // where direction is either from the host to the device
-  // 'cudaMemcpyHostToDevice' or from the device to the host 
+  // 'cudaMemcpyHostToDevice' or from the device to the host
   // 'cudaMemcpyDeviceToHost'.
 
   // put your code here
+  cudaMemcpy(d_A, h_A, N * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_B, h_B, N * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_C, h_C, N * sizeof(float), cudaMemcpyHostToDevice);
 
   //----------------------------------------------------------------------
-
-  
 
   //----------------------------------------------------------------------
   // TASK 4.0: To write your vector addition kernel. Full task is above.
   //----------------------------------------------------------------------
-  
+
   //----------------------------------------------------------------------
   // TASK 4.1: Now having data on the device and having a kernel for vector
-  //           addition we would like to execute that kernel. 
+  //           addition we would like to execute that kernel.
   //
-  // You can choose what ever grid configuration you desire, but take into 
+  // You can choose what ever grid configuration you desire, but take into
   // account that, unless you have written the kernel otherwise, it cannot
-  // handle data sizes which are not equal to 
+  // handle data sizes which are not equal to
   // (number of threads per block)*(number of blocks) == N !
   // In other words if N=200 and you are using 25 threads per block
   // you must launch your kernel with 8 blocks.
-  
+
   // put your code here
-  
+  // N = 8388608 = 8192 * 1024 = 2^23
+  vector_add<<<8192, 1024>>>(d_C, d_A, d_B);
+
   //----------------------------------------------------------------------
 
   //----------------------------------------------------------------------
   // TASK 5: Transfer data to the host.
-  
+
   // put your code here
+  cudaMemcpy(h_A, d_A, N * sizeof(float), cudaMemcpyDeviceToHost);
+  cudaMemcpy(h_B, d_B, N * sizeof(float), cudaMemcpyDeviceToHost);
+  cudaMemcpy(h_C, d_C, N * sizeof(float), cudaMemcpyDeviceToHost);
 
   //----------------------------------------------------------------------
-  
-  
-  if(N>10){
-	  printf("Check:\n");
+
+  if (N > 10)
+  {
+    printf("Check:\n");
 	  for(int f=0; f<10; f++){
 		  printf("Is %f + %f = %f?\n", h_A[f], h_B[f], h_C[f]);
 	  }
   }
-  
-  
+
   //----------------------------------------------------------------------
   // TASK 6: Free allocated resources.
   //
   // To do this on the device use cudaFree();
   
   // put your code here
+  free(h_A);
+  free(h_B);
+  free(h_C);
+  cudaFree(d_A);
+  cudaFree(d_B);
+  cudaFree(d_C);
 
   //----------------------------------------------------------------------
   

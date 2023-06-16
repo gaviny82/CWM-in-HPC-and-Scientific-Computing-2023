@@ -35,10 +35,12 @@
 // To calculate the index of the data which given thread should operate
 // on use pre-set variables threadIdx, blockIdx, blockDim and gridDim.
 
-
-
 __global__ void vector_add_uncoalesced(float *d_C, float *d_A, float *d_B){
-  // write your kernel here
+  for (int f = 0; f < M; f++)
+  {
+    int index = M * blockIdx.x * blockDim.x + threadIdx.x + f * blockDim.x;
+    d_C[index] = d_A[index] + d_B[index];
+  }
 }
 //----------------------------------------------------------------------
 
@@ -54,13 +56,14 @@ __global__ void vector_add_uncoalesced(float *d_C, float *d_A, float *d_B){
 // write your kernel here
 __global__ void vector_add_coalesced(float *d_C, float *d_A, float *d_B){
   // write your kernel here
-
+  for (int f = 0; f < M; f++)
+  {
+    int index = M * blockIdx.x * blockDim.x +
+                M * threadIdx.x + f;
+    d_C[index] = d_A[index] + d_B[index];
+  }
 }
 //----------------------------------------------------------------------
-
-
-
-
 
 
 
@@ -93,8 +96,6 @@ struct GpuTimer {
     return elapsed;
   }
 };
-
-
 
 
 int main(void) {
@@ -132,11 +133,11 @@ int main(void) {
   for(int f=0; f<10; f++){
     //----------------------------------------------------------------------
     // TASK 3: Configure vector_add_coalesced. You must take into account
-	//         how many elements are processed per thread
-	
-	// put your code here
-	
-	//----------------------------------------------------------------------
+	  //         how many elements are processed per thread
+    
+    // put your code here
+    vector_add_uncoalesced<<<2048, 1024>>>(d_C, d_A, d_B);
+    //----------------------------------------------------------------------
   }
   timer.Stop();
   printf("Vector addition with coalesced memory access execution time: %f\n", timer.Elapsed()/10.0);
@@ -146,14 +147,18 @@ int main(void) {
   for(int f=0; f<10; f++){
     //----------------------------------------------------------------------
     // TASK 4: Configure vector_add_uncoalesced. You must take into account
-	//         how many elements are processed per thread
+	  //         how many elements are processed per thread
 	
-	// put your code here
-	
-	//----------------------------------------------------------------------
+	  // put your code here
+    vector_add_coalesced<<<2048, 1024>>>(d_C, d_A, d_B);
+    //----------------------------------------------------------------------
   }
   timer.Stop();
   printf("Vector addition with uncoalesced memory access execution time: %f\n", timer.Elapsed()/10.0);
+  /* Output:
+    Vector addition with coalesced memory access execution time: 0.983315
+    Vector addition with uncoalesced memory access execution time: 16.549376
+  */
 
   cudaMemcpy(h_C, d_C, N*sizeof(float), cudaMemcpyDeviceToHost);
   
