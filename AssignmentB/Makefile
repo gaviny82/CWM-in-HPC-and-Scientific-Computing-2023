@@ -22,7 +22,7 @@ $(BIN_CUDA): $(SRC_CUDA)
 	$(NVCC) -o $(BIN_CUDA) $(SRC_CUDA) $(LIB) $(NVCCFLAGS) 
 	
 $(BIN_OMP): $(SRC_OMP)
-	$(GCC) -o $(BIN_OMP) $(SRC_OMP)
+	$(GCC) -o $(BIN_OMP) $(SRC_OMP) -fopenmp
 
 clean:	
 	rm -f *.o

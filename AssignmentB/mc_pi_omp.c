@@ -4,10 +4,12 @@
 
 int main()
 {
-    int N = 100000000;
+    int N = 8388608;
     int area = 0;
 
-    #pragma omp parallel default(none) private(x, y) shared(area, N)
+    double time_start = omp_get_wtime();
+
+    #pragma omp parallel default(none) shared(area, N)
     {
         #pragma omp for reduction(+:area)
         for (int i = 0; i < N; i++)
@@ -19,6 +21,10 @@ int main()
         }
     }
     
-    printf("\nPi:\t%f\n", (4.0 * area) / (float)N);
-    return (0);
+    double time_end = omp_get_wtime();
+
+    printf("Pi:\t%f\n", (4.0 * area) / (float)N);
+    printf("Time elapsed:\t%f\n", time_end - time_start);
+
+    return 0;
 }
