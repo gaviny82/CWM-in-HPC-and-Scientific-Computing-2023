@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
+#include <math.h>
+
+#define PI_ACCURATE 3.141592653589794
 
 int main()
 {
-    int N = 8388608;
+    int N = 65536;
     int area = 0;
 
     double time_start = omp_get_wtime();
@@ -23,7 +26,11 @@ int main()
     
     double time_end = omp_get_wtime();
 
-    printf("Pi:\t%f\n", (4.0 * area) / (float)N);
+    float pi = (4.0 * area) / (float)N;
+    float error = pi - PI_ACCURATE;
+
+    printf("Pi:\t%f\n", pi);
+    printf("Error = %.2f%%\n", error * 100);
     printf("Time elapsed:\t%f\n", time_end - time_start);
 
     return 0;
